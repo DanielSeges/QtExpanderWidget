@@ -55,7 +55,6 @@ class ExpanderWidget : public QWidget
 
 public:
     ExpanderWidget(QWidget *parent = 0);
-    QPushButton * getButton();
 
     QSize sizeHint() const;
 
@@ -68,19 +67,18 @@ public:
     bool isExpanded() const;
 
 public slots:
+
     void buttonPressed();
+    void setExpanderTitle(const QString &title);
+    void setExpanded(bool flag);
 
     void addPage(QWidget *page);
     void insertPage(int index, QWidget *page);
     void removePage(int index);
     void setCurrentIndex(int index);
 
-    void setExpanderTitle(const QString &title);
-    void setExpanded(bool flag);
-
 signals:
     void currentIndexChanged(int index);
-    void expanderChanged(bool flag);
 
 private:
     QPushButton *button;

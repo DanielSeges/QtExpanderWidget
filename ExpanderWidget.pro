@@ -9,8 +9,6 @@ load(qt_plugin)
 TEMPLATE = lib
 CONFIG  += plugin
 
-CONFIG += c++11
-
 TARGET   = $$qtLibraryTarget($$TARGET)
 
 target.path = $$[QT_INSTALL_PLUGINS]/designer
@@ -20,15 +18,21 @@ INSTALLS += target
 
 QT      += widgets designer
 
-HEADERS += expanderwidget.h \
-           expanderwidgetplugin.h \
-           expanderwidgetcontainerextension.h \
-           expanderwidgetextensionfactory.h
+CONFIG += c++11
 
-SOURCES += expanderwidget.cpp \
-           expanderwidgetplugin.cpp \
-           expanderwidgetcontainerextension.cpp \
-           expanderwidgetextensionfactory.cpp
+HEADERS += \
+    expanderwidgetplugin.h \
+    expanderwidget.h \
+    expanderwidgetcontainerextension.h \
+    expanderwidgetextensionfactory.h
+
+SOURCES += \
+    expanderwidget.cpp \
+    expanderwidgetcontainerextension.cpp \
+    expanderwidgetextensionfactory.cpp \
+    expanderwidgetplugin.cpp
 
 RESOURCES += \
     res.qrc
+
+
