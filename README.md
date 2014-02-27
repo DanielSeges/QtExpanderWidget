@@ -16,5 +16,5 @@ osx:
 
 -----------------------------------------------
 
-run Qt Designer and open expanderwidget-test.ui
+run Qt Designer and open mainwindow.ui
 
