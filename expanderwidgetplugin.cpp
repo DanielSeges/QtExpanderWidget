@@ -25,7 +25,7 @@ QString ExpanderWidgetPlugin::name() const
 
 QString ExpanderWidgetPlugin::group() const
 {
-    return QLatin1String("Display Widgets [Examples]");
+    return QLatin1String("Display Widgets");
 }
 
 QString ExpanderWidgetPlugin::toolTip() const
@@ -55,7 +55,7 @@ bool ExpanderWidgetPlugin::isContainer() const
 
 QWidget *ExpanderWidgetPlugin::createWidget(QWidget *parent)
 {
-    ExpanderWidget *widget = new ExpanderWidget(parent);
+    ExpanderWidget *widget = new ExpanderWidget(parent, true);
     connect(widget, SIGNAL(expanderChanged(bool)),this, SLOT(expanderChanged(bool)));
     return widget;
 }
@@ -98,7 +98,6 @@ QString ExpanderWidgetPlugin::domXml() const
 
 void ExpanderWidgetPlugin::expanderChanged(bool flag)
 {
-
     ExpanderWidget *widget = qobject_cast<ExpanderWidget*>(sender());
     if (widget) {
 

@@ -12,7 +12,8 @@ class ExpanderWidgetPlugin: public QObject, public QDesignerCustomWidgetInterfac
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidget")
     Q_INTERFACES(QDesignerCustomWidgetInterface)
 public:
-    ExpanderWidgetPlugin(QObject *parent = 0);
+    explicit ExpanderWidgetPlugin(QObject *parent = 0);
+    virtual ~ExpanderWidgetPlugin(){};
 
     QString name() const;
     QString group() const;

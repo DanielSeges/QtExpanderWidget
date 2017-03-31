@@ -10,7 +10,8 @@ class ExpanderWidgetExtensionFactory: public QExtensionFactory
     Q_OBJECT
 
 public:
-    ExpanderWidgetExtensionFactory(QExtensionManager *parent = 0);
+    explicit ExpanderWidgetExtensionFactory(QExtensionManager *parent = 0);
+    virtual ~ExpanderWidgetExtensionFactory(){};
 
 protected:
     QObject *createExtension(QObject *object, const QString &iid, QObject *parent) const;

@@ -14,7 +14,8 @@ class ExpanderWidgetContainerExtension: public QObject,
     Q_INTERFACES(QDesignerContainerExtension)
 
 public:
-    ExpanderWidgetContainerExtension(ExpanderWidget *widget, QObject *parent);
+    explicit ExpanderWidgetContainerExtension(ExpanderWidget *widget, QObject *parent);
+    virtual ~ExpanderWidgetContainerExtension(){};
 
     void addWidget(QWidget *widget);
     int count() const;

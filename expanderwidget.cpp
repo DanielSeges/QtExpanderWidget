@@ -1,65 +1,73 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QStackedWidget>
+#include <QSettings>
 
 #include "expanderwidget.h"
 
-ExpanderWidget::ExpanderWidget(QWidget *parent)
+ExpanderWidget::ExpanderWidget(QWidget *parent, bool in_designer)
     : QWidget(parent)
 {
-    button = new QPushButton();
-    button->setObjectName("__qt__passive_button");
-    button->setText("Expander");
-    button->setIcon(QIcon(":/arrow-expanded.png"));
-    button->setFlat(true);
-    button->setStyleSheet("text-align: left; font-weight: bold; border: none;");
+	m_in_designer = in_designer;
+	m_expanded = true;
 
-    connect(button, SIGNAL(clicked()), this, SLOT(buttonPressed()));
+	m_collapsedIcon=QIcon(":/arrow.png");
+	m_expandedIcon=QIcon(":/arrow-expanded.png");
 
-    stackWidget = new QStackedWidget();
+    m_button = new QPushButton();
+    m_button->setObjectName("__qt__passive_button");
+    m_button->setText("Expander");
+    m_button->setFlat(true);
+	m_button->setCheckable(true);
+	m_button->setChecked(true);
+	m_button->setIcon(m_expandedIcon);
+    m_button->setStyleSheet("text-align: left; font-weight: bold; border: none;");
+	
+    connect(m_button, SIGNAL(clicked()), this, SLOT(buttonPressed()));
 
-    layout = new QVBoxLayout();
-    layout->addWidget(button, 0, Qt::AlignTop);
-    layout->addWidget(stackWidget);
-    setLayout(layout);
+    m_stackWidget = new QStackedWidget();
+
+    m_layout = new QVBoxLayout();
+    m_layout->addWidget(m_button, 0, Qt::AlignTop);
+    m_layout->addWidget(m_stackWidget);
+    setLayout(m_layout);
 }
 
-void ExpanderWidget::buttonPressed(){
-
-    if(expanded)
+void ExpanderWidget::buttonPressed()
+{
+    if(m_expanded)
     {
-
-        expanded = false;
-        button->setIcon(QIcon(":/arrow.png"));
-
-        QSize size = layout->sizeHint();
-        int width = size.width();
-        int height = size.height();
-
-        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
-        stackWidget->hide();
-        resize(width, 20);
-
-        updateGeometry();
-    }
+        m_expanded = false;
+		m_button->setIcon(m_collapsedIcon);
+        m_stackWidget->hide();
+	}
     else
     {
-        expanded = true;
-        button->setIcon(QIcon(":/arrow-expanded.png"));
+        m_expanded = true;
+		m_button->setIcon(m_expandedIcon);
+        m_stackWidget->show();
+	}
 
-        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        stackWidget->show();
+	if(!m_in_designer && !m_settingsKey.isEmpty())
+	{
+		QSettings settings;
+		settings.setValue(m_settingsKey,m_expanded);
+	}
+	
+	QSize size = m_layout->sizeHint();
+	int width = size.width();
+	int height = size.height();
 
-        updateGeometry();
-    }
+	resize(width, height);
 
-    emit expanderChanged(expanded);
+	updateGeometry();
+
+    emit expanderChanged(m_expanded);
 }
 
 QSize ExpanderWidget::sizeHint() const
 {
-    return QSize(200, 20);
+	return m_layout->sizeHint();
 }
 
 void ExpanderWidget::addPage(QWidget *page)
@@ -74,50 +82,96 @@ void ExpanderWidget::removePage(int index)
 
 int ExpanderWidget::count() const
 {
-    return stackWidget->count();
+    return m_stackWidget->count();
 }
 
 int ExpanderWidget::currentIndex() const
 {
-    return stackWidget->currentIndex();
+    return m_stackWidget->currentIndex();
 }
 
 void ExpanderWidget::insertPage(int index, QWidget *page)
 {
-    page->setParent(stackWidget);
-    stackWidget->insertWidget(index, page);
+    page->setParent(m_stackWidget);
+    m_stackWidget->insertWidget(index, page);
 }
 
 void ExpanderWidget::setCurrentIndex(int index)
 {
     if (index != currentIndex()) {
-        stackWidget->setCurrentIndex(index);
+        m_stackWidget->setCurrentIndex(index);
         emit currentIndexChanged(index);
     }
 }
 
 QWidget* ExpanderWidget::widget(int index)
 {
-    return stackWidget->widget(index);
+    return m_stackWidget->widget(index);
 }
 
 void ExpanderWidget::setExpanderTitle(QString const &newTitle)
 {
-    button->setText(newTitle);
+    m_button->setText(newTitle);
 }
 
 QString ExpanderWidget::expanderTitle() const
 {
-    return button->text();
+    return m_button->text();
 }
 
 void ExpanderWidget::setExpanded(bool flag)
 {
-    if(flag != expanded) buttonPressed();
-    else expanded = flag;
+    if(flag != m_expanded)
+		buttonPressed();	
 }
 
 bool ExpanderWidget::isExpanded() const
 {
-    return expanded;
+    return m_expanded;
+}
+
+QIcon ExpanderWidget::collapsedIcon() const
+{
+	return m_collapsedIcon;
+}
+
+QIcon ExpanderWidget::expandedIcon() const
+{
+	return m_expandedIcon;
+}
+	
+void ExpanderWidget::setCollapsedIcon(const QIcon & icon)
+{
+	m_collapsedIcon=icon;
+	if(!m_expanded)
+	{
+		m_button->setIcon(m_collapsedIcon);
+	}
+}
+
+void ExpanderWidget::setExpandedIcon(const QIcon & icon)
+{
+	m_expandedIcon=icon;
+	if(m_expanded)
+	{
+		m_button->setIcon(m_expandedIcon);
+	}
+}
+
+QString ExpanderWidget::settingsKey() const
+{
+	return m_settingsKey;
+}
+
+void ExpanderWidget::setSettingsKey(QString key)
+{
+	m_settingsKey=key;
+	
+	if(!m_in_designer && !m_settingsKey.isEmpty())
+	{
+		QSettings settings;
+		bool flag = settings.value(m_settingsKey,m_expanded).toBool();
+		if(flag != m_expanded) 
+			buttonPressed();
+	}
 }
